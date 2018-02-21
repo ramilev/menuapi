@@ -113,10 +113,11 @@ Slack menu adds new attributes so it can add new feature to the menus and flow.
      }
     ]   
  
-    ```
+```
     
-    ### Multi select menu
-    ```
+### Multi select menu
+    
+```
          [{
         "fallback": "Slack Error , contact Devops.",
         "color": "#3AA3E3",
