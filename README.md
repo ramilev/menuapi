@@ -62,6 +62,10 @@ Slack menu adds new attributes so it can add new feature to the menus and flow.
 - ***dialog:*** Open popup dialog. ```"value": "dialog:dialog_example"```. Dialog file name is ```dialog_example.json```
 - ***roles:*** Enable to select menu value only for groups. ```"roles": ["devops","dev"]```. Users and groups fie definition: ```brain-dump.json```. Auth python object can be changed to use Ldap instead of json file. 
 
+## Reserved words
+
+- ***[PAYLOAD]*** The Slack POST payload json. This can be used as an argument so modules can get Slack source attributes and values such as channel and user.
+- ***[menu_file_name:menu_select_name]*** Flask server will replace the choosen value in the menu name and the select list name and pass it as an argument. 
 
 ## Running Jenkins jobs
 slack_jenkins.py can be used to trigger jenkins jobs and update Slack channel with its status.
