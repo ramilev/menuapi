@@ -14,7 +14,7 @@ This library is Slack menus bot based on json files. The menus are selections li
 
 ## Getting started
 
-- Copy directory content
+- Copy directory content ( default /opt/slack )
 - [Create Slack API App](Create Slack API App)
 - Update slack.cfg with ```FLASK PORT``` and ```SLACK_BOT_TOKEN```
 - If using systemd , update slack.service with application directory and copy slack.service to /etc/systemd/system
@@ -24,12 +24,13 @@ This library is Slack menus bot based on json files. The menus are selections li
 ## Create Slack API App
 
 - Go to slack api apps https://api.slack.com/apps/ and create new application.
-- Under install App , take "Bot User OAuth Access Token" and update slack.cfg SLACK_BOT_TOKEN.
+- Under Interactive Components, insert the Request URL ( ```http://<FLASK SERVER>:<FLASK_PORT>``` ). It should be the external server URL and FLASK port. ( Default FLASK PORT 4000 )
+- Under install App , take "Bot User OAuth Access Token" and update slack.cfg ```SLACK_BOT_TOKEN```.
 - Add bot user to channel
 - From ```Slash Commands``` Add new slash command "/menu".
 - From ```Install App``` install application to channel. 
 
-## Python dependencies
+## Prerequisites
 
   **Slack menu is written in Python and it depends on the following packages:**
   
@@ -52,7 +53,32 @@ Slack menu adds new attributes so it can add new feature to the menus and flow.
 - ***footer:*** Display the menu path. Example for sub menu: Main ```menu->Sub Menu```
 - ***type:*** ```Select``` is the menu list box and ```button``` is command button that excute the value
 - ***shared:*** ```true/false``` how menu remember selections. If shared all users in channel will share the selection.
-- 
+- ***functions:*** Fill menu list from python function. Slack server will search for the function in fuctions python module. Example of value attribute: ```"value" : "function:getExampleFunction"```. This will fill menu list by calling getExampleFunction.
+- ***run:*** If value attribute includes run: it will run the command in background and display stdout to channel. Example: ```value": "run:./examples/example.sh test```
+- ***exec:*** Same as run but will not display stdout to channel.
+- ***exec_gomain:*** Same as exec but after running the command, it will display the main menu (main.json)
+- ***exec_gomenu-menu name:*** After executing the command, it will display the choosen menu.
+
+
+
+## Running Jenkins jobs
+slack_jenkins.py can be used to trigger jenkins jobs and update Slack channel with its status.
+Ths module can be called as executable or as Python object.
+
+Cli usage:
+
+```
+slack_jenkins.py <channel name> <job name> [json parameters]
+```
+
+Python object usage: 
+
+```
+parameters={"param1_name": "param1_value" , "param2_name": "param2_value" }
+slackJenkins=SlackJenkins(channel,buildJobName,parameters)
+buildNumber=slackJenkins.buildJob()
+jobStatus=slackJenkins.getJobStatus(buildNumber)
+```
 
 
 ## Examples
