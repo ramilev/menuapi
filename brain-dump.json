@@ -1,0 +1,35 @@
+{
+  "users": {
+    "U02AJ590Z": {
+      "id": "U02AJ590Z",
+      "name": "demo1",
+      "roles": []
+    },
+    "U0Q5P3FCH": {
+      "id": "U0Q5P3FCH",
+      "name": "demo2",
+      "roles": [
+        "product",
+        "release_manager",
+        "qa"
+      ]
+    },
+    "U283DRAFQ": {
+      "id": "U283DRAFQ",
+      "name": "rami.le",
+      "roles": [
+        "devops",
+        "release manager",
+        "admin",
+        "test",
+        "qa"
+      ]
+    },
+    "U135L12UQ": {
+      "id": "U135L12UQ",
+      "name": "demo3",
+      "roles": []
+    }
+
+  }
+}

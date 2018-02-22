@@ -1,0 +1,18 @@
+{
+  "callback_id": "sub_menu:dialog_example",
+  "title": "Diaolog example",
+  "submit_label": "Submit",
+  "value":"run:./examples/dialog_example.sh [ip] [date]",
+  "elements": [
+     {
+       "name": "ip",
+       "label": "IP Address",
+       "type": "text"
+     },
+     {
+       "name": "date",
+       "label": "Date (19-feb-17 or now)",
+       "type": "text"
+     }
+  ]
+}

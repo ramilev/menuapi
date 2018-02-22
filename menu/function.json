@@ -1,0 +1,56 @@
+     [{
+        "fallback": "Slack Error , contact Devops.",
+        "color": "#3AA3E3",
+        "attachment_type": "default",
+        "callback_id": "main:function",
+        "text" : " ",
+        "title" : "Function values menu",
+        "response_type": "in_channel",
+        "replace_original": true,
+        "mrkdwn_in": ["text", "pretext"],
+        "selectType": "multipule",
+        "footer" : "Main->function menu",
+        "save": "value",
+        "shared" : true,
+        "actions": 
+          [
+                        {
+                            "name": "selections",
+                            "text": "Choose service",
+                            "type": "select",
+                            "min_query_length": 5,
+                            "value" : "function:getExampleFunction",
+                            "options": [ ]
+                        },
+                        {
+                            "name": "clear",
+                            "text": "clear",
+                            "type": "button",
+                            "value": "clearSelect:services"
+                        },
+                        {
+                            "name": "submit",
+                            "text": "Submit",
+                            "type": "button",
+                            "value": "exec_gomain:./examples/example_multi_select.py \"[PAYLOAD]\" [function:selections]",
+                            "style": "danger"
+                        },
+                        {
+                            "name": "back",
+                            "text": "Back",
+                            "type": "button",
+                            "value": "back",
+                            "style": "primary"
+                        },
+                        {
+                            "name": "main",
+                            "text": "Main",
+                            "type": "button",
+                            "value": "main",
+                            "style": "primary"
+                        }
+
+
+          ]
+     }
+    ]

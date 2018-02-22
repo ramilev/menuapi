@@ -1,0 +1,17 @@
+[Unit]
+Description=Slack Service
+After=syslog.target network.target base_ami.service
+
+[Service]
+User=root
+Group=root
+
+ExecStart=/opt/slack/slack_server.sh start
+ExecStop=/opt/slack/slack_server.sh stop
+
+#PIDFile=/var/log/slack/slack_server.pid
+Restart=always
+
+
+[Install]
+WantedBy=multi-user.target
