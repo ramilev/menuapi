@@ -8,6 +8,7 @@ This library is Slack menus bot based on json files. The menus are selections li
 - Multiple selections menu
 - Fill menus using external functions
 - Popup dialogs from menu selection
+- Permissions and groups. 
 - Remember last user choices
 - execute external commands
 - Python libraries for running Jenkins and Teletraan jobs 
@@ -58,7 +59,8 @@ Slack menu adds new attributes so it can add new feature to the menus and flow.
 - ***exec:*** Same as run but will not display stdout to channel.
 - ***exec_gomain:*** Same as exec but after running the command, it will display the main menu (main.json)
 - ***exec_gomenu-menu name:*** After executing the command, it will display the choosen menu.
-
+- ***dialog:*** Open popup dialog. ```"value": "dialog:dialog_example"```. Dialog file name is ```dialog_example.json```
+- ***roles:*** Enable to select menu value only for groups. ```"roles": ["devops","dev"]```. Users and groups fie definition: ```brain-dump.json```. Auth python object can be changed to use Ldap instead of json file. 
 
 
 ## Running Jenkins jobs
