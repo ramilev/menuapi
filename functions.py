@@ -17,7 +17,7 @@ def getConfluencePlans(value=""):
   headers = {
     'content-type': 'application/json',
   }
-  url="http://bot.infra:123456@confluence.matomy.local/rest/api/content/search?limit=90&cql=space=RTB%20and%20title%20~%20'Deployment%20Plan'%20and%20lastModified>now('-12w')"
+  url="http://confluence.matomy.local/rest/api/content/search?limit=90&cql=space=RTB%20and%20title%20~%20'Deployment%20Plan'%20and%20lastModified>now('-12w')"
   result = requests.get(url, headers=headers)
   resultJson = result.json()
 
@@ -26,9 +26,9 @@ def getConfluencePlans(value=""):
     planTitle=plan["title"].replace("Deployment Plan - ","")
     if ( not planTitle.find("") ):
       if ( value == "" ):
-        plans.append( { "value" : planTitle , "text" : planTitle } )
+        plans.append( { "value" : planTitle , "text" : planTitle , "label": planTitle } )
       else:
-        plans.append( { "value" : value , "text" : planTitle } )
+        plans.append( { "value" : value , "text" : planTitle , "label": planTitle} )
 
   return(plans)
 

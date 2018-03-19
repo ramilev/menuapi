@@ -42,7 +42,7 @@
                             "name": "clear",
                             "text": "clear",
                             "type": "button",
-                            "value": "clearSelect:services"
+                            "value": "clearSelect:selections"
                         },
                         {
                             "name": "submit",

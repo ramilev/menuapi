@@ -128,13 +128,13 @@ class SlackMenu(object):
 
 
     if ( "name" in self.formJson["actions"][0] ):
-       slack.saveMenuStatus(text,menuName , selectName ,selectType,self.slackUserName)
+       slack.saveMenuStatus(text,menuName , selectName ,selectType,self.slackUserName, self.shared )
 
 
   #clear saved selected values
   def __clearSelect(self,value):
 
-       slack.clearMenuStatus(self.previousMenuName,value)
+       slack.clearMenuStatus(self.previousMenuName,value,self.slackUserName,self.shared)
        menuData=""
 
        originalMessage=self.formJson["original_message"]
@@ -178,10 +178,7 @@ class SlackMenu(object):
              self.__loadMenu(commandType,value,selectName)
              return
  
-       if ( self.shared == False ):
-         menuData=slack.loadMenuStatus(self.previousMenuName,selectName,self.slackUserName)
-       else:
-         menuData=slack.loadMenuStatus(self.previousMenuName,selectName)
+       menuData=slack.loadMenuStatus(self.previousMenuName,selectName,self.slackUserName, self.shared)
 
        textData=""
        for data in menuData:
@@ -283,11 +280,7 @@ class SlackMenu(object):
   def __loadSelectedValues(self,menu,menuName):
 
       selectName=menu[0]["actions"][0]["name"]
-      if ( self.shared == False ):
-        menuData=slack.loadMenuStatus( menuName, selectName, self.slackUserName )
-      else:
-        menuData=slack.loadMenuStatus( menuName, selectName )
-
+      menuData=slack.loadMenuStatus( menuName, selectName, self.slackUserName , self.shared )
 
       textData=""
       for menuItem in menuData:
@@ -525,9 +518,7 @@ class SlackMenu(object):
     app.logger.debug("Post data:" + commandType + "," + value)
 
 
-
     #load menu selection from json
-
     if ( commandType == "menu" and os.path.isfile( "menu/" + value + ".json" ) ):
 
        self.__loadMenu(commandType,value,selectName)
