@@ -347,6 +347,8 @@ class SlackMenu(object):
   #dialog
   def __dialog(self,value):
 
+       valueBeforeParse=""
+
        #dialog submited
        if ( value == "" and "submission" in self.formJson):
          dialog=utils.readJson("menu/" + self.previousMenuName + ".json")
@@ -355,6 +357,7 @@ class SlackMenu(object):
          #check if there submit command
          if ( "value" in dialog and ( "run" in dialog["value"] or "exec" in dialog["value"] )):
            value=dialog["value"]
+           valueBeforeParse=value
 
            pos=value.index(":")
            commandType=value[:pos]
@@ -369,9 +372,19 @@ class SlackMenu(object):
              text="*User* `" + self.slackUserName + "`\n*Running command:* " + cmdArgs[0]
            )
  
-           thr = Thread(target=self.__slackThreadRun , args=[cmd,commandType])
-           thr.start()
-
+           validate=slack.validateCommand(valueBeforeParse,dialog,"dialog")
+           
+           if ( validate == True ):
+             thr = Thread(target=self.__slackThreadRun , args=[cmd,commandType])
+             thr.start()
+           else:
+             response = slack_client.api_call(
+               "chat.postMessage",
+               channel=self.channel,
+               text="@" + self.slackUserName + " *Alert*: `Running command is not the same as server command!`"
+             )
+             return()
+ 
            #load menu after running
            if commandType == "exec_gomain" or commandType == "run_gomain":
               #load main menu
@@ -424,6 +437,9 @@ class SlackMenu(object):
     value=""
     self.channel=""
     self.ts=""
+    buttonValue=""
+    buttonName=""
+    valueBeforeParse=""
 
     self.formJson = json.loads(request.form["payload"])
     self.slackUserName=slack.getSlackUserName(self.formJson)
@@ -465,6 +481,7 @@ class SlackMenu(object):
     if ( "actions" in self.formJson and self.formJson["actions"][0]["type"] == "select" ):
 
       selectValue=self.formJson["actions"][0]["selected_options"][0]["value"]
+      valueBeforeParse=selectValue
 
       if ( "save:" in selectValue ):
          commandType="menu"
@@ -490,6 +507,8 @@ class SlackMenu(object):
 
       buttonValue=self.formJson["actions"][0]["value"]
       buttonName=self.formJson["actions"][0]["name"]
+      valueBeforeParse=buttonValue
+
       userHasRoles=slack.checkSelectedMenuRoles(self.previousMenu,buttonName,"button",self.slackUserName)
       if ( not userHasRoles ):
         response = slack_client.api_call(
@@ -513,9 +532,8 @@ class SlackMenu(object):
       else:
          value=buttonValue
 
-
     value=slack.parseMenuValue(value,self.formJson,self.slackUserName,self.shared)
-    app.logger.debug("Post data:" + commandType + "," + value)
+    app.logger.debug("Post data:" + commandType + "," + value + "," + valueBeforeParse)
 
 
     #load menu selection from json
@@ -539,8 +557,16 @@ class SlackMenu(object):
     #run external script
     elif ( "run" in commandType or "exec" in commandType ):
 
-       self.__runExternal(commandType,value,footer)
-
+       validate=slack.validateCommand(valueBeforeParse,self.previousMenu,buttonValue)
+       if ( validate == True ):
+          self.__runExternal(commandType,value,footer)
+       else:
+          response = slack_client.api_call(
+            "chat.postMessage",
+            channel=self.channel,
+            text="@" + self.slackUserName + " *Alert*: `Running command is not the same as server command!`"
+          )
+ 
     return make_response("", 200)
  
 

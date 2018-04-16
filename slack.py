@@ -27,12 +27,37 @@ class Slack(object):
     self.SLACK_BOT_TOKEN = slackConfig.get("SLACK_BOT_TOKEN")
     self.slack_client = SlackClient(self.SLACK_BOT_TOKEN)
 
+  def validateCommand(self,value,menu,validateType):
+    self.app.logger.debug("Validate command " + value)
+
+    validate=False
+    if ( validateType == "" ):
+      for option in menu[0]["actions"][0]["options"]:
+         if ( "value" in option and value == option["value"]):
+            validate=True
+            print("validate found",option["value"])
+    elif ( validateType == "dialog" ):
+      if ( "value" in menu and menu["value"] == value ):
+            validate=True
+            print("validate found",menu["value"])
+    else:
+      for button in menu[0]["actions"]:
+            print(button)
+            if ( "name" in button and value == button["name"] ):
+                validate=True
+                print("validate found",button["name"])
+            elif ( "value" in button and value == button["value"] ):
+                validate=True
+                print("validate found",button["value"])
+
+    return(validate)
+
+
 
   #parse string with [xxx] and replace it with the menu value choosen or value from db
   def parseMenuValue(self,value,formJson,slackUserName="",shared=False):
     self.app.logger.debug("Parse command " + value + "," + slackUserName)
 
-    self.app.logger.debug(shared)
     if ( shared == True ):
       slackUserName=""
  
@@ -69,7 +94,7 @@ class Slack(object):
              menuName=splitItem
              selectName=""
 
-           data=self.loadMenuStatus(menuName,selectName,slackUserName)
+           data=self.loadMenuStatus(menuName,selectName,slackUserName,shared)
            resultString=""
            for dataItem in data:
             if ( not resultString == "" ):
@@ -149,40 +174,42 @@ class Slack(object):
       slackDB.set(key,value)
 
 
-  def loadMenuStatus(self,menuName,selectName,slackUserName=""):
-    self.app.logger.debug("loadMenu:" + menuName + "," + selectName + "," + slackUserName)
+  def loadMenuStatus(self,menuName,selectName,slackUserName="",shared=False):
+    self.app.logger.debug("loadMenu: {},{},{},{}".format(menuName , selectName, slackUserName,shared))
 
     menuData=[]
-    if ( slackUserName == "" ):
+    dataFileName=""
+
+    if ( shared == True ):
        dataFileName="menu/" + menuName + "_" + selectName + ".db"
-    else:
+    elif ( shared == False and not slackUserName == "" ):
        dataFileName="menu/" + menuName + "_" + selectName + "_" + slackUserName + ".db"
 
+    self.app.logger.debug("loadMenuStatus filename: {}".format(dataFileName))
     if ( os.path.isfile(dataFileName ) ):
        fileObject = open(dataFileName ,'r')
        menuData = pickle.load(fileObject)
        fileObject.close()
-       #app.logger.debug(menuData )
+       #self.app.logger.debug(menuData )
     return(menuData)
 
 
   def __saveObject(self,dataFileName,menuData,slackUserName):
-
 
     fileObject = open(dataFileName,'wb')
     pickle.dump(menuData,fileObject)
     fileObject.close()
 
 
-  def saveMenuStatus(self,menuValue,menuName,selectName,selectType,slackUserName=""):
-    self.app.logger.debug("saveMenu:" + menuValue + "," + menuName + "," + selectName + "," + selectType + "," + slackUserName)
+  def saveMenuStatus(self,menuValue,menuName,selectName,selectType,slackUserName="",shared=False):
+    self.app.logger.debug("saveMenu: {},{},{},{},{},{}".format(menuValue, menuName ,selectName , selectType , slackUserName,shared))
 
-    menuData=self.loadMenuStatus(menuName,selectName,slackUserName)
+    menuData=self.loadMenuStatus(menuName,selectName,slackUserName,shared)
+    self.app.logger.debug(menuData)
     if ( selectType == "multipule" and not menuValue in menuData ):
           menuData.append(menuValue)
     elif ( selectType == "unique" ):
           menuData=[menuValue]
-
 
     if ( not slackUserName == "" ):
       dataFileName="menu/" + menuName + "_"+ selectName + "_" + slackUserName + ".db"
@@ -192,11 +219,16 @@ class Slack(object):
     self.__saveObject(dataFileName,menuData,slackUserName)
 
 
-  def clearMenuStatus(self,menuName,selectName):
+  def clearMenuStatus(self,menuName,selectName,slackUserName="",shared=False):
 
-    dataFileName="menu/" + menuName + "_" + selectName + ".db"
+    if ( shared == False and not slackUserName == "" ):
+      dataFileName="menu/" + menuName + "_" + selectName + "_"+slackUserName+".db"
+    else:
+      dataFileName="menu/" + menuName + "_" + selectName + ".db"
+
+    self.app.logger.debug("Clear menu select {}/{} {} {} {}".format(menuName,selectName,slackUserName,shared,dataFileName))
     if ( os.path.isfile(dataFileName ) ):
-        self.app.logger.debug("clear menu " + menuName)
+        self.app.logger.debug("clear menu " + dataFileName)
         os.remove(dataFileName)
 
 
